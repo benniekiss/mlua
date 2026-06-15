@@ -778,7 +778,7 @@ impl Table {
             ffi::lua_pushnil(state);
             while ffi::lua_next(state, -2) != 0 {
                 let k = K::from_stack(-2, &lua)?;
-                let v = V::from_stack(-1, &lua)?;
+                let v = lua.pop::<V>()?;
                 f(k, v)?;
             }
         }
@@ -1255,7 +1255,8 @@ impl Serialize for SerializableTable<'_> {
         }
 
         // HashMap
-        let mut map = serializer.serialize_map(None)?;
+        let len = self.table.raw_len();
+        let mut map = serializer.serialize_map(Some(len))?;
         let mut serialize_err = None;
         let mut process_pair = |key, value| {
             if check_value_for_skip(&key, self.options, visited)
