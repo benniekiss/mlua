@@ -1255,17 +1255,18 @@ impl Serialize for SerializableTable<'_> {
         }
 
         // HashMap
-        let mut map = serializer.serialize_map(None)?;
+        let len = self.table.raw_len();
+        let mut map = serializer.serialize_map(Some(len))?;
         let mut serialize_err = None;
         let mut process_pair = |key, value| {
-            let skip_key = check_value_for_skip(&key, self.options, visited)
-                .map_err(|err| Error::SerializeError(err.to_string()))?;
-            let skip_value = check_value_for_skip(&value, self.options, visited)
-                .map_err(|err| Error::SerializeError(err.to_string()))?;
-            if skip_key || skip_value {
-                // continue iteration
+            if check_value_for_skip(&key, self.options, visited)
+                .map_err(|err| Error::SerializeError(err.to_string()))?
+                || check_value_for_skip(&value, self.options, visited)
+                    .map_err(|err| Error::SerializeError(err.to_string()))?
+            {
                 return Ok(());
             }
+
             map.serialize_entry(
                 &SerializableValue::new(&key, options, Some(visited)),
                 &SerializableValue::new(&value, options, Some(visited)),
