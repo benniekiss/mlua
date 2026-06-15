@@ -778,7 +778,7 @@ impl Table {
             ffi::lua_pushnil(state);
             while ffi::lua_next(state, -2) != 0 {
                 let k = K::from_stack(-2, &lua)?;
-                let v = lua.pop::<V>()?;
+                let v = V::from_stack(-1, &lua)?;
                 f(k, v)?;
             }
         }
