@@ -1255,8 +1255,7 @@ impl Serialize for SerializableTable<'_> {
         }
 
         // HashMap
-        let len = self.raw_len();
-        let mut map = serializer.serialize_map(Some(len))?;
+        let mut map = serializer.serialize_map(None)?;
         let mut serialize_err = None;
         let mut process_pair = |key, value| {
             if check_value_for_skip(&key, self.options, visited)
