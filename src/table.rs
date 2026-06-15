@@ -1255,7 +1255,7 @@ impl Serialize for SerializableTable<'_> {
         }
 
         // HashMap
-        let len = self.table.raw_len();
+        let len = self.raw_len();
         let mut map = serializer.serialize_map(Some(len))?;
         let mut serialize_err = None;
         let mut process_pair = |key, value| {
